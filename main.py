@@ -123,7 +123,7 @@ while run_game:
             player_x = 100
             enemy_list_in_game.clear()
 
-        pg.display.update()
+
 
 
         # Цикл закрытия приложения
@@ -138,6 +138,7 @@ while run_game:
 
 
     clock.tick(14) # 14 - колво фреймов (смен картинок) в секунду
+    pg.display.update()
 pg.quit()
 
 
