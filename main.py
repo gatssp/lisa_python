@@ -11,7 +11,7 @@ bg_sound.play() # установили фоновый звук приложен�
 width = 900
 heigt = 600
 game_screen = pg.display.set_mode((width, heigt)) # описание игрового дисплея
-
+# комментарий ради комментария
 icon_game = pg.image.load('images/icon_tiger.png')
 pg.display.set_icon(icon_game) # установили изображение "иконки" приложения
 
@@ -19,7 +19,9 @@ pg.display.set_icon(icon_game) # установили изображение "и
 bg_game = pg.image.load('images/bg_game.jpg')# загрузили фоновое изображение
 bg_game_over= pg.image.load('images/game-over-screen.jpg')
 enemy = pg.image.load('images/bird.png') # загрузили изображение врага
+bullet = pg.image.load('images/paintball.png')
 
+bullets=[]
 enemy_list_in_game=[]
 walk_right = [pg.image.load('images/player/right_walk/tiger1.png'),
               pg.image.load('images/player/right_walk/tiger2.png'),
@@ -46,6 +48,7 @@ restart_rect = restart.get_rect(topleft=(370, 400))
 enemy_timer = pg.USEREVENT + 1
 pg.time.set_timer(enemy_timer,3500)
 
+bullet_count = 5
 player_count = 0 # переменная счетчик для перебора спрайтсов в цикле
 jump_count = 8 # высота передвижения игрока в пикселях
 
@@ -70,6 +73,7 @@ while run_game:
 
                 if el.x < -12:
                     enemy_list_in_game.pop(i)
+
                 if player_rect.colliderect(el):
                     game_play = False
 
@@ -89,23 +93,40 @@ while run_game:
         if bg_x == -900: # если фон сместился на 900 пикселей
             bg_x = 0 # cново поставить координату по икс=0
 
+        if pressed_keys[pg.K_w]:
+            bullets.append(bullet.get_rect(topleft=(player_x + 100, player_y + 100)))
+
+        if bullets:
+            for (i, el ) in enumerate(bullets):
+                game_screen.blit(bullet, (el.x, el.y))
+                el.x += 4
+
+                if el.x > 910:
+                    bullets.pop(i)
+
+                if enemy_list_in_game:
+                    for(index, enemy_el) in enumerate(enemy_list_in_game):
+                        if el.colliderect(enemy_el):
+                            enemy_list_in_game.pop(index)
+                            bullets.pop(i)
+
 
         if pressed_keys[pg.K_LEFT] and player_x > 50: # если нажата кнопка влево и координата игорка по иксу больше 50
             player_x -= player_speed # смещение координат игорка по иксу на кол-во пикселей указанных как скорость игрока влево
         elif pressed_keys[pg.K_RIGHT] and player_x < 800:
             player_x += player_speed
 
-        if not is_jump: # проверака на значение, уходим в первую ветку только если is_jump = False
+        if not is_jump:  # проверака на значение, уходим в первую ветку только если is_jump = False
             if pressed_keys[pg.K_SPACE]:
                 is_jump = True
-        else: # ветка запускается сразу после замены значения is_jump  на True
-            if jump_count >= -8: # если высота передвижения игрока в пикселях >= -7
+        else:  # ветка запускается сразу после замены значения is_jump  на True
+            if jump_count >= -8:  # если высота передвижения игрока в пикселях >= -7
 
                 if jump_count > 0:
-                    player_y-= (jump_count**2)/2 #смещение координат игорка по игреку на кол-во пикселей указанных как высотапрыжка (формула для плавности прыжка) вверх
+                    player_y -= ( jump_count ** 2) / 2  # смещение координат игорка по игреку на кол-во пикселей указанных как высотапрыжка (формула для плавности прыжка) вверх
                 else:
-                    player_y += (jump_count**2)/2 # вниз
-                jump_count-= 1
+                    player_y += (jump_count ** 2) / 2  # вниз
+                jump_count -= 1
 
             else:
                 is_jump = False
@@ -122,7 +143,7 @@ while run_game:
             game_play = True
             player_x = 100
             enemy_list_in_game.clear()
-
+            bullets.clear()
 
 
 
